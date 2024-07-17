@@ -16,14 +16,20 @@ def get_openai_chat(messages:list) -> str:
     """
     docs: https://platform.openai.com/docs/api-reference/chat/create
     """
-    model = "gpt-4o",
+    print("messages", messages)
+    model = "gpt-4o"
+    data = {
+        "model": model,
+        "messages": messages,
+    }
     api_url = "https://api.openai.com/v1/chat/completions"
     headers = {
-        "Authorization": "Bearer " + os.environ["OPENAI_API_KEY"],
         "Content-Type": "application/json",
+        "Authorization": "Bearer " + os.environ["OPENAI_API_KEY"],
     }
-    data = {"model": model, "messages": messages, }
     response = requests.post(api_url, headers=headers, data=json.dumps(data)).json()
+    print("response")
+    print(response)
     return response['choices'][0]['message']['content']
 
 
@@ -31,6 +37,7 @@ def get_numeric_uuid(id: str) -> int:
     """
     convert string id to numeric (for youtube video id's)
     """
+
     # Convert the alphanumeric string to bytes
     s_bytes = id.encode('utf-8')
     # Calculate the SHA-256 hash of the bytes
@@ -51,7 +58,7 @@ def get_data():
     all_data = list(download_transcripts(video_ids, titles))
     print("done getting data")
     docs     = list(data["text"] for data in all_data)
-    metadata = list(data["title"] for data in all_data)
+    metadata = list({"title": data["title"]} for data in all_data)
     ids      = list(get_numeric_uuid(data["video_id"]) for data in all_data)
     return docs, metadata, ids
 
