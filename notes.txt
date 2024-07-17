@@ -1,0 +1,27 @@
+│ use scrapetube to get the video id's for a channel or playlist
+│ use youtube-transcript-api to download transcript from video id
+
+see how fastembed works -- will save money doing local inference
+
+test:
+    - download one transcript (15 mins) and see how big it is in data
+    - create embedding and submit it as rag and see how much data is sent
+
+    WHAT MATTERS:
+    - only time I send data to llm:
+        - documents found in RAG
+        - user query
+        - rolling context?
+
+    Test:
+        - download one transcript (1 hour -- the king of the games one)
+        - view size
+        - write code to download it then pass info to embedding model
+        - 
+
+Next:
+    - try to get it to generate a timestamp, start and end
+
+Production:
+    https://github.com/qdrant/qdrant-client?tab=readme-ov-file#async-client
+    - use ASYNC qdrant
