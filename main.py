@@ -57,9 +57,9 @@ def get_data():
     ]
     all_data = list(download_transcripts(video_ids, titles))
     print("done getting data")
-    docs     = list(data["text"] for data in all_data)
-    metadata = list({"title": data["title"]} for data in all_data)
-    ids      = list(get_numeric_uuid(data["video_id"]) for data in all_data)
+    docs     = (data["text"] for data in all_data)
+    metadata = ({"title": data["title"]} for data in all_data)
+    ids      = (get_numeric_uuid(data["video_id"]) for data in all_data)
     return docs, metadata, ids
 
 def download_transcripts(video_ids: list, titles: list) -> Generator[Dict[str, str], None, None]:
