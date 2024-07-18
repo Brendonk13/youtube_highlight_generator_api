@@ -6,6 +6,12 @@ authors = ["brendonk13 <brendonk13.bk@gmail.com>"]
 readme = "README.md"
 package-mode = true
 
+# only way local imports would work, somethings strange
+packages = [
+    { include = "youtube_clip_finder" },
+]
+
+
 [tool.pyright]
 venvPath="/home/brendon/.cache/pypoetry/virtualenvs"
 venv="youtube-clip-finder-QBHj98ju-py3.12"
@@ -21,6 +27,8 @@ langchain-openai = "^0.1.17"
 tiktoken = "^0.7.0"
 scrapetube = "^2.5.1"
 youtube-transcript-api = "^0.6.2"
+python-dotenv = "^1.0.1"
+flashrank = "^0.2.6"
 
 
 [build-system]
