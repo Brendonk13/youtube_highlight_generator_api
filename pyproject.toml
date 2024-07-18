@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "youtube-clip-finder"
+version = "0.1.0"
+description = ""
+authors = ["brendonk13 <brendonk13.bk@gmail.com>"]
+readme = "README.md"
+package-mode = true
+
+[tool.pyright]
+venvPath="/home/brendon/.cache/pypoetry/virtualenvs"
+venv="youtube-clip-finder-QBHj98ju-py3.12"
+
+
+[tool.poetry.dependencies]
+python = "^3.12"
+langchain = "^0.2.9"
+fastrank = "^0.8.0"
+langchain-community = "^0.2.7"
+faiss-cpu = "^1.8.0.post1"
+langchain-openai = "^0.1.17"
+tiktoken = "^0.7.0"
+scrapetube = "^2.5.1"
+youtube-transcript-api = "^0.6.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
