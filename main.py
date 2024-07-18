@@ -14,6 +14,8 @@ from youtube_transcript_api import YouTubeTranscriptApi
 
 def get_openai_chat(messages:list) -> str:
     """
+    https://github.com/openai/openai-python?tab=readme-ov-file#async-usage
+
     docs: https://platform.openai.com/docs/api-reference/chat/create
     """
     print("messages", messages)
@@ -70,7 +72,7 @@ def download_transcripts(video_ids: list, titles: list) -> Generator[Dict[str, s
     for video_id, title in zip(video_ids, titles):
         transcript = YouTubeTranscriptApi.get_transcript(video_id)
         # convert to int to save data
-        text = " ".join(f"<s:{int(line['start'])}>,<d:{int(line['duration'])}><l:{line['text']}>" for line in transcript)
+        text = " ".join(f"<{int(line['start'])}><{int(line['duration'])}><{line['text']}>" for line in transcript)
         yield {"text": text, "title": title, "video_id": video_id}
 
 def get_qdrant_client(docs, metadata, ids):
@@ -89,6 +91,20 @@ def get_qdrant_client(docs, metadata, ids):
         # comment this line to use dense vectors only
         # sparse_vectors_config=client.get_fastembed_sparse_vector_params(),
     )
+
+
+    # client = QdrantClient(url="http://localhost:6333")
+    # client.create_collection(
+    #     collection_name="{collection_name}",
+    #     vectors_config=models.VectorParams(size=768, distance=models.Distance.COSINE),
+    #     quantization_config=models.ScalarQuantization(
+    #         scalar=models.ScalarQuantizationConfig(
+    #             type=models.ScalarType.INT8,
+    #             quantile=0.99,
+    #             always_ram=True,
+    #         ),
+    #     ),
+    # )
 
     client.add(
         collection_name=collection_name,
@@ -119,11 +135,12 @@ def get_system_prompt() -> str:
 
         the format of the context is as follows in backticks:
         ```
-        <s:7:58>,<d:6.13><l:Hey pal>
+        <7:58><6.13><Hey pal>
         ```
-        where the 's' in <s:7:58> stands for 'start time'
-        and   the 'd' in <d:6.13> stands for 'duration'
-        and   the 't' in <l:Hey pal> stands for 'line'
+        the following is ordered left to right
+        where the content in the first <>  is the 'start time'
+        where the content in the second <> is the 'duration'
+        where the content in the third <>  is the 'line'
 
         Note that start time is the timestamp at which the line occurs in the youtube video
 
@@ -132,8 +149,15 @@ def get_system_prompt() -> str:
         Do not rely solely on the additional context, although the context should have relevant information to answer the prompt.
 
         When the answer is found in the context, provide the title of the context used to produce the answer as well as a start time and end time for lines which were used to answer this question.
+
+        Feel free to merge lines from the context to give a better answer, as long as the correct start time is given.
     """).strip()
         # When the answer is found in the context, please provide the title of the context used to produce the answer as well as a quote from the context that is relevant to answering the user's question.
+
+        # where the 's' in <s:7:58> stands for 'start time'
+        # and   the 'd' in <d:6.13> stands for 'duration'
+        # and   the 't' in <l:Hey pal> stands for 'line'
+
 
 def get_initial_messages() -> List[Dict[str,str]]:
     return [
