@@ -69,7 +69,8 @@ def download_transcripts(video_ids: list, titles: list) -> Generator[Dict[str, s
     """
     for video_id, title in zip(video_ids, titles):
         transcript = YouTubeTranscriptApi.get_transcript(video_id)
-        text = " ".join(line["text"] for line in transcript)
+        # convert to int to save data
+        text = " ".join(f"<s:{int(line['start'])}>,<d:{int(line['duration'])}><l:{line['text']}>" for line in transcript)
         yield {"text": text, "title": title, "video_id": video_id}
 
 def get_qdrant_client(docs, metadata, ids):
@@ -102,7 +103,7 @@ def get_qdrant_client(docs, metadata, ids):
 
 def get_system_prompt() -> str:
     return dedent("""
-        You are a bot which answers questions about youtube videos.
+        You are a bot which answers questions about youtube videos and provides timestamps to indicate to the user where the answer to their question was derived from.
         You will be given additional context from some youtube video transcripts to help you give informed answers to the user's questions.
         The additional context will be gathered by a RAG system.
 
@@ -116,12 +117,23 @@ def get_system_prompt() -> str:
         --------------------------------
         ```
 
+        the format of the context is as follows in backticks:
+        ```
+        <s:7:58>,<d:6.13><l:Hey pal>
+        ```
+        where the 's' in <s:7:58> stands for 'start time'
+        and   the 'd' in <d:6.13> stands for 'duration'
+        and   the 't' in <l:Hey pal> stands for 'line'
+
+        Note that start time is the timestamp at which the line occurs in the youtube video
+
         If the user's question is ambigious, then you should prompt the user for additional information.
 
         Do not rely solely on the additional context, although the context should have relevant information to answer the prompt.
 
-        When the answer is found in the context, please provide the title of the context used to produce the answer as well as a quote from the context that is relevant to answering the user's question.
+        When the answer is found in the context, provide the title of the context used to produce the answer as well as a start time and end time for lines which were used to answer this question.
     """).strip()
+        # When the answer is found in the context, please provide the title of the context used to produce the answer as well as a quote from the context that is relevant to answering the user's question.
 
 def get_initial_messages() -> List[Dict[str,str]]:
     return [
