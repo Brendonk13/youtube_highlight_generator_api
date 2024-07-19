@@ -24,9 +24,19 @@ from youtube_clip_finder.config import CONFIG
 
 def get_prompt():
     system_prompt = (
-        "Use the given context to answer the question. "
+        "Use the given youtube transcript context to answer the question. "
         "If you don't know the answer, say you don't know. "
         "Use three sentence maximum and keep the answer concise. "
+        "the format of the data within the context is as follows in backticks:"
+        "```"
+        "<7:58><6.13><Hey pal>"
+        "```"
+        "the following is ordered left to right"
+        "where the content in the first <>  is the 'start time'"
+        "where the content in the second <> is the 'duration'"
+        "where the content in the third <>  is the 'line'"
+        "this is a line, you need to return the start time and end time of each line used to determine the answer"
+        "provide the time in hour:minute:second as well as just seconds"
         "Context: {context}"
     )
 
@@ -101,23 +111,23 @@ def format_docs_with_id(docs: list[Document]) -> str:
 
 if __name__ == "__main__":
     query = "who is the king of the games"
-    llm = get_llm()
 
-    structured_llm = llm.with_structured_output(QuotedAnswer)
+    llm = get_llm()
+    # structured_llm = llm.with_structured_output(QuotedAnswer)
     chain = get_retrieval_chain(llm)
     prompt = get_prompt()
 
-    rag_chain_from_docs = (
-    RunnablePassthrough.assign(context=(lambda x: format_docs_with_id(x["context"])))
-    | prompt
-    | llm.with_structured_output(QuotedAnswer)
-    )
+    # rag_chain_from_docs = (
+    # RunnablePassthrough.assign(context=(lambda x: format_docs_with_id(x["context"])))
+    # | prompt
+    # | llm.with_structured_output(QuotedAnswer)
+    # )
 
-    retrieve_docs = (lambda x: x["input"]) | retriever
+    # retrieve_docs = (lambda x: x["input"]) | chain
 
-    chain = RunnablePassthrough.assign(context=retrieve_docs).assign(
-        answer=rag_chain_from_docs
-    )
+    # chain = RunnablePassthrough.assign(context=retrieve_docs).assign(
+    #     answer=rag_chain_from_docs
+    # )
 
     result = chain.invoke({"input": query})
 

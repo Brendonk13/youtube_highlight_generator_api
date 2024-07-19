@@ -28,22 +28,10 @@ def get_data(download_name = 'test') -> list[Document]:
         "MSSP - Shane Rages During Monopoly With Family"
     ]
     docs: list[Document] = []
-    # ids = []
-    # ids = {}
     for data in download_transcripts(video_ids, titles):
         text, title, id = data["text"], data["title"], get_numeric_uuid(data["video_id"])
-        # docs.append({"text": text, "metadata": title})
         docs.append(Document(page_content=text, metadata={"title": title, "id": id}))
-        # docs[-1].metadata = title
-        # docs[-1].id = id
-        # docs.append({"page_content": text, "metadata": title})
-        # ids[title] = id
-        # ids.append(id)
     print("done getting data")
-    # docs     = [data["text"] for data in all_data]
-    # metadata = [{"title": data["title"]} for data in all_data]
-    # ids      = [get_numeric_uuid(data["video_id"]) for data in all_data]
-    # return docs, metadata, ids
     return docs
 
 def download_transcripts(video_ids: list, titles: list) -> Generator[dict[str, str], None, None]:
