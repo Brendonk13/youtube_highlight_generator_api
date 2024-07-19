@@ -1,54 +1,14 @@
 Next:
-    - convert to use langchain
     https://home.mlops.community/public/blogs/building-a-serverless-application-with-aws-lambda-and-qdrant-for-semantic-search
-    - use with gpt4all
-    - google how to best get cited data from llm
     - give it a defined output format
     - move to the cloud, add code to download the youtube playlist of everything
-    - make simple frontend with htmx and tailwind
+    - make frontend
     - cleanup input transcript data and remove bs characters
 
 todo:
     - cleanup data and remove bs characters
 
-Production:
-    https://github.com/qdrant/qdrant-client?tab=readme-ov-file#async-client
-    - use ASYNC qdrant
-
-LangChain:
-    https://api.python.langchain.com/en/latest/chains/langchain.chains.retrieval_qa.base.RetrievalQA.html
-
-    - setup reranking with fastrank (cpu based)
-    https://python.langchain.com/v0.2/docs/integrations/retrievers/flashrank-reranker/
-        -- has FAISS
-
-    setup citations:
-    https://python.langchain.com/v0.2/docs/how_to/qa_citations/
-
-    embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
-
-    use duckdb:
-    https://python.langchain.com/v0.2/docs/integrations/vectorstores/duckdb/
-    - find how to do scalar quantization
-
-    - use faiss
-
-
 Cloud:
-    - setup qdrant
-            https://qdrant.tech/documentation/guides/installation/#docker-and-docker-compose
-            --^ root for docker section
-
-            Docker compose file:
-            https://qdrant.tech/documentation/guides/installation/#docker-compose
-
-            - use scalar quantization
-                https://qdrant.tech/documentation/guides/quantization/
-                https://cloud.qdrant.io/calculator?provider=aws&region=us-east-1&replicas=1&quantization=None&vectors=4166667&dimension=300
-
-            aws managed version:
-            https://aws.amazon.com/marketplace/pp/prodview-rtphb42tydtzg
-
     - setup gpt4all in a lambda
     - can I setup swap space in a lambda ?
 
