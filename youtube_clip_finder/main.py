@@ -94,7 +94,7 @@ class QuotedAnswer(BaseModel):
 
 def format_docs_with_id(docs: list[Document]) -> str:
     formatted = [
-        f"Source ID: {i}\nArticle Title: {doc.metadata['title']}\nArticle Snippet: {doc.page_content}"
+        f"Source ID: {i}\nVideo Title: {doc.metadata['title']}\nTranscript Snippet: {doc.page_content}"
         for i, doc in enumerate(docs)
     ]
     return "\n\n" + "\n\n".join(formatted)
@@ -102,6 +102,7 @@ def format_docs_with_id(docs: list[Document]) -> str:
 if __name__ == "__main__":
     query = "who is the king of the games"
     llm = get_llm()
+
     structured_llm = llm.with_structured_output(QuotedAnswer)
     chain = get_retrieval_chain(llm)
     prompt = get_prompt()
