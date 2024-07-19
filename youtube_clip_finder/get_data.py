@@ -27,37 +27,32 @@ def get_data(download_name = 'test') -> list[Document]:
         "Ep 413 - King Of The Games (feat. Lil Sasquatch)",
         "MSSP - Shane Rages During Monopoly With Family"
     ]
-    docs = []
-    for text, title, video_id, id in download_transcripts(video_ids, titles):
-        metadata = {
-            "id": id,
-            "title": title,
-            "video_id": video_id,
-        }
-        docs.append(Document(page_content=text, metadata=metadata))
-    print("done downloading transcript")
+    docs: list[Document] = []
+    # ids = []
+    # ids = {}
+    for data in download_transcripts(video_ids, titles):
+        text, title, id = data["text"], data["title"], get_numeric_uuid(data["video_id"])
+        # docs.append({"text": text, "metadata": title})
+        docs.append(Document(page_content=text, metadata={"title": title, "id": id}))
+        # docs[-1].metadata = title
+        # docs[-1].id = id
+        # docs.append({"page_content": text, "metadata": title})
+        # ids[title] = id
+        # ids.append(id)
+    print("done getting data")
+    # docs     = [data["text"] for data in all_data]
+    # metadata = [{"title": data["title"]} for data in all_data]
+    # ids      = [get_numeric_uuid(data["video_id"]) for data in all_data]
+    # return docs, metadata, ids
     return docs
 
-def download_transcripts(video_ids: list[str], titles: list[str]) -> Generator[Tuple[str, str, str, int], None, None]:
+def download_transcripts(video_ids: list, titles: list) -> Generator[dict[str, str], None, None]:
+    """
+    todo: add download limiter so that you only download like 5 at a time
+    move this into a class so we can save the state on how much has been downloaded
+    """
     for video_id, title in zip(video_ids, titles):
         transcript = YouTubeTranscriptApi.get_transcript(video_id)
-        # text = " ".join(f"<{int(line['start'])}><{int(line['duration'])}><{line['text']}>" for line in transcript)
-        # print(type(transcript), len(transcript), transcript)
-        idx = 0
-        curr_lines = []
-        num_documents = 0
-        while idx < len(transcript):
-            line = transcript[idx]
-            # convert to int to save data
-            curr_lines.append(f"<{int(line['start'])}><{int(line['duration'])}><{line['text']}>")
-            if idx % CONFIG.document_size == 0:
-                id = get_numeric_uuid(f"{video_id}{num_documents}")
-                yield " ".join(curr_lines), title, video_id, id
-                num_documents += 1
-            idx += 1
-        # text = " ".join(f"<{int(line['start'])}><{int(line['duration'])}><{line['text']}>" for line in transcript)
-
-        # dont want to forget these !
-        if curr_lines:
-            id = get_numeric_uuid(f"{video_id}{num_documents}")
-            yield " ".join(curr_lines), title, video_id, id
+        # convert to int to save data
+        text = " ".join(f"<{int(line['start'])}><{int(line['duration'])}><{line['text']}>" for line in transcript)
+        yield {"text": text, "title": title, "video_id": video_id}
