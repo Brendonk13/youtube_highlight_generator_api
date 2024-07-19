@@ -10,6 +10,8 @@ from fastembed import TextEmbedding
 import scrapetube
 from qdrant_client import QdrantClient
 from youtube_transcript_api import YouTubeTranscriptApi
+from langchain_core.documents import Document
+
 
 
 def get_openai_chat(messages:list) -> str:
