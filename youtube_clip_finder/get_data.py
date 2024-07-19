@@ -2,7 +2,8 @@ import hashlib
 from typing import Generator, Tuple
 from youtube_transcript_api import YouTubeTranscriptApi
 from langchain_core.documents import Document
-from youtube_clip_finder.config import CONFIG
+# from youtube_clip_finder.config import CONFIG
+
 
 def get_numeric_uuid(id: str) -> int:
     """
@@ -15,7 +16,6 @@ def get_numeric_uuid(id: str) -> int:
     hex_digest = hash_object.hexdigest()
     # Convert the hexadecimal digest to an integer
     numeric_uuid = int(hex_digest, 16)
-    # self.numeric_uuid = numeric_uuid
     return numeric_uuid
 
 
@@ -34,6 +34,7 @@ def get_data(download_name = 'test') -> list[Document]:
         docs.append(Document(page_content=text, metadata={"title": title, "id": id}))
     print("done getting data")
     return docs
+
 
 def download_transcripts(video_ids: list, titles: list) -> Generator[dict[str, str], None, None]:
     """

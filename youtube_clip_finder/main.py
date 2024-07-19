@@ -4,10 +4,10 @@
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_core.pydantic_v1 import BaseModel, Field
+# from langchain_core.pydantic_v1 import BaseModel, Field
 
 from langchain_core.documents import Document
-from langchain_core.runnables import RunnablePassthrough
+# from langchain_core.runnables import RunnablePassthrough
 
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import FlashrankRerank
@@ -19,7 +19,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 
 from youtube_clip_finder.get_data import get_data
-from youtube_clip_finder.config import CONFIG
+# from youtube_clip_finder.config import CONFIG
 
 
 def get_prompt():
@@ -41,8 +41,6 @@ def get_prompt():
         "Context: {context}"
     )
 
-    # return the start and end times of everyting
-
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system_prompt),
@@ -51,6 +49,7 @@ def get_prompt():
     )
     prompt.pretty_print()
     return prompt
+
 
 def get_base_retriever():
     # pass youtuber name here later
@@ -64,6 +63,7 @@ def get_base_retriever():
     base_retriever = FAISS.from_documents(documents, embedding).as_retriever(search_kwargs={"k": 20})
     return base_retriever
 
+
 def get_compression_retriever():
     base_retriever = get_base_retriever()
 
@@ -72,35 +72,16 @@ def get_compression_retriever():
         base_compressor=compressor, base_retriever=base_retriever
     )
 
+
 def get_llm():
     return ChatOpenAI(temperature=0, model="gpt-4o")
 
-def get_retrieval_chain(llm):
+
+def get_retrieval_chain():
     compression_retriever = get_compression_retriever()
+    llm = get_llm()
     question_answer_chain = create_stuff_documents_chain(llm, get_prompt())
     return create_retrieval_chain(compression_retriever, question_answer_chain)
-
-class Citation(BaseModel):
-    source_id: int = Field(
-        ...,
-        description="The integer ID of a SPECIFIC source which justifies the answer.",
-    )
-    quote: str = Field(
-        ...,
-        description="The VERBATIM quote from the specified source that justifies the answer.",
-    )
-
-
-class QuotedAnswer(BaseModel):
-    """Answer the user question based only on the given sources, and cite the sources used."""
-
-    answer: str = Field(
-        ...,
-        description="The answer to the user question, which is based only on the given sources.",
-    )
-    citations: list[Citation] = Field(
-        ..., description="Citations from the given sources that justify the answer."
-    )
 
 
 def format_docs_with_id(docs: list[Document]) -> str:
@@ -113,22 +94,8 @@ def format_docs_with_id(docs: list[Document]) -> str:
 if __name__ == "__main__":
     query = "who is the king of the games"
 
-    llm = get_llm()
     # structured_llm = llm.with_structured_output(QuotedAnswer)
-    chain = get_retrieval_chain(llm)
-    prompt = get_prompt()
-
-    # rag_chain_from_docs = (
-    # RunnablePassthrough.assign(context=(lambda x: format_docs_with_id(x["context"])))
-    # | prompt
-    # | llm.with_structured_output(QuotedAnswer)
-    # )
-
-    # retrieve_docs = (lambda x: x["input"]) | chain
-
-    # chain = RunnablePassthrough.assign(context=retrieve_docs).assign(
-    #     answer=rag_chain_from_docs
-    # )
+    chain = get_retrieval_chain()
 
     result = chain.invoke({"input": query})
 
