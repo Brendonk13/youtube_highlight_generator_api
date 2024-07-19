@@ -30,6 +30,7 @@ def get_data(download_name = 'test') -> list[Document]:
     docs: list[Document] = []
     for data in download_transcripts(video_ids, titles):
         text, title, id = data["text"], data["title"], get_numeric_uuid(data["video_id"])
+        text=f"video_id:<{data['video_id']}>{text}"
         docs.append(Document(page_content=text, metadata={"title": title, "id": id}))
     print("done getting data")
     return docs

@@ -36,7 +36,8 @@ def get_prompt():
         "where the content in the second <> is the 'duration'"
         "where the content in the third <>  is the 'line'"
         "this is a line, you need to return the start time and end time of each line used to determine the answer"
-        "provide the time in hour:minute:second as well as just seconds"
+        "provide the time in start_time=hour:minute:second as well as just seconds: (seconds=second), use this format with no spaces so I can parse it out of your response"
+        "you must also return the video id: video_id=id for the line"
         "Context: {context}"
     )
 
@@ -55,8 +56,8 @@ def get_base_retriever():
     # pass youtuber name here later
     documents = get_data(download_name="test")
     # I split the documents myself when downloading so we get better metadata
-    # text_splitter = RecursiveCharacterTextSplitter(chunk_size=750, chunk_overlap=100)
-    # texts = text_splitter.split_documents(documents)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=100)
+    texts = text_splitter.split_documents(documents)
 
     embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
     # what is search_kwargs

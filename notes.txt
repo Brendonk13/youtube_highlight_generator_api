@@ -1,6 +1,5 @@
 Next:
     https://home.mlops.community/public/blogs/building-a-serverless-application-with-aws-lambda-and-qdrant-for-semantic-search
-    - give it a defined output format
     - move to the cloud, add code to download the youtube playlist of everything
     - make frontend
     - cleanup input transcript data and remove bs characters
